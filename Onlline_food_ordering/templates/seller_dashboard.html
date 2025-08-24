@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Seller Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(8px);
+      z-index: -1;
+    }
+
+    .navbar {
+      background: rgba(0, 0, 0, 0.8);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .navbar-brand, .navbar-text, .nav-link {
+      color: #fff !important;
+      font-weight: 500;
+    }
+
+    .container.dashboard {
+      margin-top: 30px;
+      background: rgba(255, 255, 255, 0.07);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+    }
+
+    .dashboard-header h2 {
+      text-align: center;
+      font-weight: 700;
+      background: linear-gradient(to right, #ffe259, #ffa751);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fadeSlide 1s ease-out;
+    }
+
+    @keyframes fadeSlide {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 25px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .action-bar form {
+      flex-grow: 1;
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-box {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .product-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 20px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      height: 100%;
+      transition: 0.3s;
+      color: #fff;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .product-name {
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+
+    .price {
+      color: #ff9800;
+      font-weight: 500;
+      font-size: 1.1rem;
+    }
+
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    canvas {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 30px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <span class="navbar-brand">Seller Dashboard</span>
+    <span class="navbar-text ms-auto">ID: {{ seller_id }} | {{ seller_name }}</span>
+    <a class="btn btn-outline-light ms-3" href="/logout">Logout</a>
+  </div>
+</nav>
+
+<!-- Dashboard Body -->
+<div class="container dashboard">
+  <div class="dashboard-header">
+    <h2>Welcome, {{ seller_name }}</h2>
+  </div>
+
+  <!-- Action bar -->
+  <div class="action-bar">
+    <form method="POST" action="/seller/{{ seller_id }}/add">
+      <input type="text" name="name" class="form-control" placeholder="Product Name" required>
+      <input type="number" name="price" step="0.01" class="form-control" placeholder="Price" required>
+      <button type="submit" class="btn btn-success">Add Product</button>
+    </form>
+    <a href="/seller/{{ seller_id }}/orders" class="btn btn-primary">View Orders</a>
+  </div>
+
+  <!-- Search bar -->
+  <input type="text" id="searchInput" class="form-control search-box" placeholder="Search your products...">
+
+  <!-- Product Cards -->
+  <div class="row mt-4" id="productContainer">
+    {% for product in products %}
+    <div class="col-md-4 mb-4 product-card-container">
+      <div class="product-card">
+        <div class="product-name">{{ product[1] }}</div>
+        <div class="price">₹ {{ product[2] }}</div>
+        <a href="/seller/{{ seller_id }}/delete/{{ product[0] }}" class="btn btn-danger btn-sm mt-3 w-100">Delete</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Charts -->
+  <h4 class="mt-5 mb-3 text-center">📊 Product Performance</h4>
+  <canvas id="orderChart" height="150"></canvas>
+  <canvas id="revenueChart" height="150"></canvas>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  &copy; 2025 Online Food Ordering - Seller Panel
+</div>
+
+<!-- Search script -->
+<script>
+  const searchInput = document.getElementById("searchInput");
+  const productCards = document.querySelectorAll(".product-card-container");
+
+  searchInput.addEventListener("keyup", function () {
+    const query = this.value.toLowerCase();
+    productCards.forEach(card => {
+      const productName = card.querySelector(".product-name").textContent.toLowerCase();
+      card.style.display = productName.includes(query) ? "block" : "none";
+    });
+  });
+</script>
+
+<!-- Chart.js Script -->
+<script>
+  const productNames = {{ product_names | tojson }};
+  const orderCounts = {{ order_counts | tojson }};
+  const revenues = {{ revenues | tojson }};
+
+  const ctx1 = document.getElementById('orderChart').getContext('2d');
+  new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: productNames,
+      datasets: [{
+        label: 'Number of Orders',
+        data: orderCounts,
+        backgroundColor: 'rgba(255, 193, 7, 0.7)',
+        borderColor: 'rgba(255, 193, 7, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  const ctx2 = document.getElementById('revenueChart').getContext('2d');
+  new Chart(ctx2, {
+    type: 'line',
+    data: {
+      labels: productNames,
+      datasets: [{
+        label: 'Revenue (₹)',
+        data: revenues,
+        fill: true,
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        borderColor: 'rgba(255, 87, 34, 0.9)',
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

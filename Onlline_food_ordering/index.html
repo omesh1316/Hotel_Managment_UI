@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌠 Quantum Stellar Interface</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.2/chroma.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@100;200;300;400;500;600;700;800;900&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --quantum-void: #000010;
+      --stellar-black: #00051a;
+      --nebula-core: #12003d;
+      --galactic-purple: #2a0a5e;
+      --cosmic-violet: #4a0a9e;
+      --quantum-blue: #0a6bff;
+      --nebula-cyan: #00f7ff;
+      --pulsar-pink: #ff00f7;
+      --supernova-yellow: #ffd700;
+      --quantum-white: #f0f5ff;
+      --dark-matter: #050520;
+      --event-horizon: #1a1a3a;
+      
+      --quantum-speed: 0.6s;
+      --stellar-speed: 1.2s;
+      --cosmic-speed: 2.4s;
+      --galactic-speed: 4.8s;
+      
+      --z-starfield: -100;
+      --z-nebula: -90;
+      --z-blackhole: -80;
+      --z-planets: -70;
+      --z-asteroids: -60;
+      --z-grid: -50;
+      --z-content: 10;
+      --z-cursor: 1000;
+      --z-loader: 10000;
+    }
+    
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      min-height: 100vh;
+      background: radial-gradient(ellipse at bottom, var(--stellar-black) 0%, var(--quantum-void) 100%);
+      color: var(--quantum-white);
+      font-family: 'Exo 2', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      perspective: 1000px;
+      overscroll-behavior: none;
+      font-smooth: always;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+    }
+    
+    a {
+      color: var(--nebula-cyan);
+      text-decoration: none;
+      transition: all var(--quantum-speed) ease;
+    }
+    
+    .quantum-text {
+      background: linear-gradient(135deg, var(--nebula-cyan), var(--pulsar-pink), var(--supernova-yellow));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 300% 300%;
+      animation: quantumGradient 8s ease infinite;
+      text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    }
+    
+    @keyframes quantumGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .quantum-glow {
+      filter: drop-shadow(0 0 8px currentColor);
+    }
+    
+    .quantum-pulse {
+      animation: quantumPulse 3s infinite alternate;
+    }
+    
+    @keyframes quantumPulse {
+      0% { opacity: 0.7; transform: scale(0.98); }
+      100% { opacity: 1; transform: scale(1.02); }
+    }
+    
+    .quantum-glass {
+      backdrop-filter: blur(24px) saturate(180%);
+      background: rgba(10, 10, 40, 0.3);
+      border: 1px solid rgba(100, 200, 255, 0.15);
+      border-radius: 2rem;
+      box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.4),
+        inset 0 0 20px rgba(100, 200, 255, 0.1);
+      overflow: hidden;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: all var(--quantum-speed) cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    #quantum-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--quantum-void);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 10000;
+      transition: opacity 1.5s ease;
+    }
+    
+    .loader-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      margin-top: 1rem;
+      text-align: center;
+      color: var(--nebula-cyan);
+    }
+    
+    .loader-progress {
+      width: 300px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      margin-top: 2rem;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cosmic-violet), var(--quantum-blue));
+      transition: width 0.3s ease;
+    }
+    
+    .loader-stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      color: var(--nebula-cyan);
+    }
+    
+    .quantum-cursor {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--nebula-cyan);
+      mix-blend-mode: difference;
+      pointer-events: none;
+      z-index: 1000;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s;
+    }
+    
+    .cursor-particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 999;
+    }
+    
+    .quantum-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 1.5rem 3rem;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .nav-container {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .nav-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: var(--quantum-white);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+    
+    .nav-link {
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      position: relative;
+      padding: 0.5rem 0;
+    }
+    
+    .nav-link:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--nebula-cyan);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-link:hover:after {
+      width: 100%;
+    }
+    
+    .nav-actions {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .nav-button {
+      padding: 0.8rem 1.8rem;
+      border-radius: 50px;
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 600;
+      background: transparent;
+      border: 2px solid var(--quantum-blue);
+      color: var(--quantum-white);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-button.primary {
+      background: var(--quantum-blue);
+      border-color: var(--quantum-blue);
+    }
+    
+    .nav-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(10, 107, 255, 0.4);
+    }
+    
+    .hero-section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 5rem;
+    }
+    
+    .hero-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    
+    .hero-content {
+      max-width: 600px;
+    }
+    
+    .hero-title {
+      font-size: 5rem;
+      margin-bottom: 2rem;
+      line-height: 1.1;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.8rem;
+      margin-bottom: 3rem;
+      max-width: 80%;
+      color: rgba(240, 245, 255, 0.8);
+    }
+    
+    .hero-actions {
+      display: flex;
+      gap: 1.5rem;
+    }
+    
+    .hero-button {
+      padding: 1.2rem 3rem;
+      border-radius: 50px;
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+    }
+    
+    .hero-button.primary {
+      background: linear-gradient(135deg, var(--quantum-blue), var(--cosmic-violet));
+      color: white;
+    }
+    
+    .hero-button {
+      background: transparent;
+      border: 2px solid var(--quantum-blue);
+      color: var(--quantum-white);
+    }
+    
+    .hero-button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(10, 107, 255, 0.5);
+    }
+    
+    .hero-visual {
+      width: 600px;
+      height: 600px;
+      position: relative;
+    }
+    
+    .features-section {
+      padding: 8rem 0;
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+    
+    .section-title {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    
+    .section-subtitle {
+      font-size: 1.3rem;
+      color: rgba(240, 245, 255, 0.7);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .feature-card {
+      background: rgba(10, 20, 40, 0.3);
+      border-radius: 1.5rem;
+      padding: 2.5rem;
+      transition: all 0.4s ease;
+      border: 1px solid rgba(100, 200, 255, 0.1);
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      border-color: rgba(100, 200, 255, 0.3);
+    }
+    
+    .feature-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      background: rgba(10, 107, 255, 0.1);
+      font-size: 2rem;
+      color: var(--quantum-blue);
+    }
+    
+    .feature-title {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    
+    .feature-description {
+      color: rgba(240, 245, 255, 0.8);
+    }
+    
+    .galaxy-section {
+      padding: 8rem 0;
+    }
+    
+    .galaxy-container {
+      width: 100%;
+      height: 600px;
+      position: relative;
+      border-radius: 2rem;
+      overflow: hidden;
+      border: 1px solid rgba(100, 200, 255, 0.2);
+    }
+    
+    #galaxy-map {
+      width: 100%;
+      height: 100%;
+      background: rgba(5, 5, 20, 0.2);
+    }
+    
+    .galaxy-controls {
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+    .galaxy-control {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(10, 20, 40, 0.5);
+      border: 1px solid rgba(100, 200, 255, 0.2);
+      color: white;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .galaxy-control:hover {
+      background: rgba(10, 107, 255, 0.3);
+      transform: scale(1.1);
+    }
+    
+    .galaxy-coordinates {
+      background: rgba(10, 20, 40, 0.5);
+      border: 1px solid rgba(100, 200, 255, 0.2);
+      padding: 0.8rem 1.5rem;
+      border-radius: 50px;
+      font-family: 'Exo 2', monospace;
+    }
+    
+    .contact-section {
+      padding: 8rem 0;
+    }
+    
+    .contact-form {
+      max-width: 600px;
+      margin: 0 auto;
+      background: rgba(10, 20, 40, 0.3);
+      border-radius: 2rem;
+      padding: 3rem;
+      border: 1px solid rgba(100, 200, 255, 0.2);
+    }
+    
+    .form-group {
+      margin-bottom: 2rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    
+    input, textarea {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 1rem;
+      background: rgba(5, 5, 20, 0.5);
+      border: 1px solid rgba(100, 200, 255, 0.2);
+      color: white;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--quantum-blue);
+      box-shadow: 0 0 0 3px rgba(10, 107, 255, 0.3);
+    }
+    
+    .submit-button {
+      padding: 1.2rem 3rem;
+      border-radius: 50px;
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      background: linear-gradient(135deg, var(--quantum-blue), var(--cosmic-violet));
+      color: white;
+      width: 100%;
+    }
+    
+    .submit-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(10, 107, 255, 0.4);
+    }
+    
+    .quantum-footer {
+      padding: 5rem 0 3rem;
+      border-top: 1px solid rgba(100, 200, 255, 0.1);
+    }
+    
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+    
+    .footer-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-align: center;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    
+    .link-group {
+      display: flex;
+      flex-direction: column;
+      min-width: 200px;
+    }
+    
+    .link-title {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      color: var(--nebula-cyan);
+    }
+    
+    .footer-link {
+      margin-bottom: 1rem;
+      color: rgba(240, 245, 255, 0.8);
+      transition: all 0.3s ease;
+    }
+    
+    .footer-link:hover {
+      color: var(--nebula-cyan);
+      transform: translateX(5px);
+    }
+    
+    .footer-social {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .social-link {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 20, 40, 0.5);
+      border: 1px solid rgba(100, 200, 255, 0.2);
+      font-size: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .social-link:hover {
+      background: rgba(10, 107, 255, 0.3);
+      transform: translateY(-5px);
+    }
+    
+    .footer-copyright {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(100, 200, 255, 0.1);
+      color: rgba(240, 245, 255, 0.6);
+    }
+    
+    .black-hole {
+      position: fixed;
+      top: 30%;
+      left: 20%;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #000 0%, #000 40%, transparent 70%);
+      box-shadow: 
+        0 0 100px rgba(0, 247, 255, 0.1),
+        0 0 200px rgba(0, 247, 255, 0.05);
+      z-index: -80;
+      filter: blur(1px);
+    }
+    
+    .accretion-disk {
+      position: fixed;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      z-index: -85;
+      animation: rotateDisk linear infinite;
+    }
+    
+    .accretion-disk:nth-child(1) {
+      width: 500px;
+      height: 500px;
+      top: calc(30% - 250px);
+      left: calc(20% - 250px);
+      border-top-color: rgba(0, 247, 255, 0.3);
+      animation-duration: 120s;
+    }
+    
+    .accretion-disk:nth-child(2) {
+      width: 600px;
+      height: 600px;
+      top: calc(30% - 300px);
+      left: calc(20% - 300px);
+      border-top-color: rgba(255, 0, 247, 0.2);
+      animation-duration: 180s;
+    }
+    
+    .accretion-disk:nth-child(3) {
+      width: 700px;
+      height: 700px;
+      top: calc(30% - 350px);
+      left: calc(20% - 350px);
+      border-top-color: rgba(255, 215, 0, 0.15);
+      animation-duration: 240s;
+    }
+    
+    @keyframes rotateDisk {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .planet {
+      position: fixed;
+      top: 20%;
+      right: 20%;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #3498db, #1a5276);
+      box-shadow: 
+        inset -25px -25px 40px rgba(0,0,0,0.3),
+        0 0 50px rgba(52, 152, 219, 0.5);
+      z-index: -70;
+      animation: rotatePlanet 120s linear infinite;
+    }
+    
+    .planet:before {
+      content: '';
+      position: absolute;
+      top: 15%;
+      left: 15%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 
+        0 0 30px rgba(255, 255, 255, 0.2);
+    }
+    
+    .planet:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      box-shadow: 
+        inset -10px -10px 20px rgba(255, 255, 255, 0.1),
+        0 0 60px rgba(52, 152, 219, 0.4);
+      z-index: 2;
+    }
+    
+    .atmosphere {
+      position: absolute;
+      top: -15%;
+      left: -15%;
+      width: 130%;
+      height: 130%;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, transparent, rgba(52, 152, 219, 0.1));
+      z-index: -1;
+      animation: pulseAtmosphere 8s infinite alternate;
+    }
+    
+    @keyframes rotatePlanet {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    @keyframes pulseAtmosphere {
+      0% { opacity: 0.3; transform: scale(1); }
+      100% { opacity: 0.7; transform: scale(1.05); }
+    }
+    
+    .quantum-particle {
+      position: fixed;
+      border-radius: 50%;
+      z-index: -60;
+    }
+    
+    .quantum-nebula {
+      position: fixed;
+      top: 50%;
+      right: 10%;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(138, 43, 226, 0.1), transparent 70%);
+      filter: blur(80px);
+      z-index: -90;
+      animation: moveNebula 30s infinite alternate;
+    }
+    
+    @keyframes moveNebula {
+      0% { transform: translate(0, 0); }
+      50% { transform: translate(100px, -100px); }
+      100% { transform: translate(-100px, 100px); }
+    }
+    
+    .quantum-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(100, 200, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(100, 200, 255, 0.05) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: -50;
+    }
+    
+    .lens-distortion {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, transparent, rgba(0, 0, 0, 0.8) 40%);
+      pointer-events: none;
+      z-index: -75;
+      mix-blend-mode: multiply;
+    }
+  </style>
+</head>
+<body class="relative overflow-x-hidden">
+  <!-- Quantum Loader -->
+  <div id="quantum-loader">
+    <div class="loader-container">
+      <svg width="300" height="300" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="45" fill="none" stroke="#00f7ff" stroke-width="2" stroke-dasharray="212" stroke-dashoffset="212">
+          <animate attributeName="stroke-dashoffset" dur="2s" to="0" fill="freeze" />
+        </circle>
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#ff00f7" stroke-width="2" stroke-dasharray="188" stroke-dashoffset="188">
+          <animate attributeName="stroke-dashoffset" dur="2s" to="0" begin="0.2s" fill="freeze" />
+        </circle>
+        <circle cx="50" cy="50" r="35" fill="none" stroke="#ffd700" stroke-width="2" stroke-dasharray="165" stroke-dashoffset="165">
+          <animate attributeName="stroke-dashoffset" dur="2s" to="0" begin="0.4s" fill="freeze" />
+        </circle>
+        <circle cx="50" cy="50" r="30" fill="none" stroke="#0a6bff" stroke-width="2" stroke-dasharray="141" stroke-dashoffset="141">
+          <animate attributeName="stroke-dashoffset" dur="2s" to="0" begin="0.6s" fill="freeze" />
+        </circle>
+      </svg>
+      <div class="loader-text">Initializing Quantum Interface</div>
+      <div class="loader-progress">
+        <div class="progress-bar"></div>
+      </div>
+      <div class="loader-stats">
+        <div class="stat-item">
+          <span class="stat-label">Memory Allocation</span>
+          <span class="stat-value">87%</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Neural Sync</span>
+          <span class="stat-value">64%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quantum Backgrounds -->
+  <canvas id="quantum-starfield"></canvas>
+  <div class="quantum-nebula"></div>
+  <div class="quantum-grid"></div>
+  
+  <!-- Quantum Objects -->
+  <div class="black-hole"></div>
+  <div class="accretion-disk"></div>
+  <div class="accretion-disk"></div>
+  <div class="accretion-disk"></div>
+  <div class="planet"></div>
+  <div class="atmosphere"></div>
+  <div class="lens-distortion"></div>
+  
+  <!-- Quantum Particles -->
+  <div id="quantum-particles"></div>
+  
+  <!-- Quantum Cursor -->
+  <div class="quantum-cursor" id="quantum-cursor"></div>
+  <div id="cursor-trail"></div>
+
+  <!-- Quantum Navigation -->
+  <nav class="quantum-nav">
+    <div class="nav-container">
+      <div class="nav-logo">INTERSTELLAR</div>
+      <div class="nav-links">
+        <a href="#home" class="nav-link">Home</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#galaxy" class="nav-link">Galaxy</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button class="nav-button">Login</button>
+        <button class="nav-button primary">Sign Up</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Quantum Content -->
+  <main class="container mx-auto px-6 py-24 relative z-10">
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+      <div class="hero-container">
+        <div class="hero-content">
+          <h1 class="hero-title quantum-text">INTERSTELLAR SUPREME</h1>
+          <p class="hero-subtitle">Experience the future of quantum interfaces with unprecedented realism</p>
+          <div class="hero-actions">
+            <button class="hero-button primary">Explore Dimensions</button>
+            <button class="hero-button">Learn More</button>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div id="three-container"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+      <div class="section-header">
+        <h2 class="section-title quantum-text">QUANTUM FEATURES</h2>
+        <p class="section-subtitle">Discover the power of interstellar technology</p>
+      </div>
+      
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <div class="feature-card quantum-glass">
+          <div class="feature-icon">
+            <i class="fas fa-atom"></i>
+          </div>
+          <h3 class="feature-title">Quantum Processing</h3>
+          <p class="feature-description">Harness the power of quantum entanglement for instantaneous computations across dimensions.</p>
+        </div>
+        
+        <!-- Feature 2 -->
+        <div class="feature-card quantum-glass">
+          <div class="feature-icon">
+            <i class="fas fa-rocket"></i>
+          </div>
+          <h3 class="feature-title">Hyperspeed Navigation</h3>
+          <p class="feature-description">Travel through interfaces at faster-than-light speeds with our quantum propulsion system.</p>
+        </div>
+        
+        <!-- Feature 3 -->
+        <div class="feature-card quantum-glass">
+          <div class="feature-icon">
+            <i class="fas fa-star"></i>
+          </div>
+          <h3 class="feature-title">Stellar Mapping</h3>
+          <p class="feature-description">Navigate the cosmos with our real-time 3D galaxy mapping technology.</p>
+        </div>
+        
+        <!-- Feature 4 -->
+        <div class="feature-card quantum-glass">
+          <div class="feature-icon">
+            <i class="fas fa-dna"></i>
+          </div>
+          <h3 class="feature-title">Neural Integration</h3>
+          <p class="feature-description">Direct neural interface for seamless control of complex quantum systems.</p>
+        </div>
+        
+        <!-- Feature 5 -->
+        <div class="feature-card quantum-glass">
+          <div class="feature-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3 class="feature-title">Quantum Shielding</h3>
+          <p class="feature-description">Protect against cosmic radiation and quantum interference with our advanced shields.</p>
+        </div>
+        
+        <!-- Feature 6 -->
+        <div class="feature-card quantum-glass">
+          <div class="feature-icon">
+            <i class="fas fa-infinity"></i>
+          </div>
+          <h3 class="feature-title">Infinite Scaling</h3>
+          <p class="feature-description">Our systems scale infinitely to handle the most complex cosmic computations.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Galaxy Map Section -->
+    <section id="galaxy" class="galaxy-section">
+      <div class="section-header">
+        <h2 class="section-title quantum-text">GALACTIC NAVIGATION</h2>
+        <p class="section-subtitle">Explore the quantum universe in real-time</p>
+      </div>
+      
+      <div class="galaxy-container quantum-glass">
+        <canvas id="galaxy-map"></canvas>
+        <div class="galaxy-controls">
+          <button class="galaxy-control zoom-in">+</button>
+          <button class="galaxy-control zoom-out">-</button>
+          <div class="galaxy-coordinates">
+            <span class="coord-x">X: 0.0</span>
+            <span class="coord-y">Y: 0.0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+      <div class="section-header">
+        <h2 class="section-title quantum-text">CONTACT US</h2>
+        <p class="section-subtitle">Reach across the quantum void</p>
+      </div>
+      
+      <div class="contact-form quantum-glass">
+        <form id="quantum-form">
+          <div class="form-group">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Quantum Link</label>
+            <input type="email" id="email" required>
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="submit-button">Transmit Message</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- Quantum Footer -->
+  <footer class="quantum-footer">
+    <div class="footer-container">
+      <div class="footer-logo">INTERSTELLAR</div>
+      
+      <div class="footer-links">
+        <div class="link-group">
+          <h4 class="link-title">Explore</h4>
+          <a href="#" class="footer-link">Galaxies</a>
+          <a href="#" class="footer-link">Nebulas</a>
+          <a href="#" class="footer-link">Black Holes</a>
+          <a href="#" class="footer-link">Wormholes</a>
+        </div>
+        
+        <div class="link-group">
+          <h4 class="link-title">Resources</h4>
+          <a href="#" class="footer-link">Documentation</a>
+          <a href="#" class="footer-link">API</a>
+          <a href="#" class="footer-link">Tutorials</a>
+          <a href="#" class="footer-link">Research Papers</a>
+        </div>
+        
+        <div class="link-group">
+          <h4 class="link-title">Company</h4>
+          <a href="#" class="footer-link">About</a>
+          <a href="#" class="footer-link">Careers</a>
+          <a href="#" class="footer-link">Contact</a>
+          <a href="#" class="footer-link">Mission</a>
+        </div>
+      </div>
+      
+      <div class="footer-social">
+        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+      </div>
+    </div>
+    
+    <div class="footer-copyright">
+      © 2024 Quantum Design Systems. All rights reserved across all dimensions.
+    </div>
+  </footer>
+
+  <script>
+    // ===== QUANTUM INITIALIZATION =====
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('%c🚀 Quantum Interface Initializing...', 'font-size: 18px; color: #00ffff;');
+      
+      // Initialize all quantum systems
+      initQuantumLoader();
+      initQuantumStarfield();
+      initQuantumParticles();
+      initQuantumCursor();
+      initQuantumNavigation();
+      initQuantumAnimations();
+      initGalaxyMap();
+      initQuantumForm();
+      initQuantumAudio();
+      initQuantumThreeJS();
+      
+      // Final initialization
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          console.log('%c✅ Quantum Interface Ready', 'font-size: 18px; color: #00ff00;');
+          initPostLoadEffects();
+        }, 2000);
+      });
+    });
+    
+    // ===== QUANTUM LOADER =====
+    function initQuantumLoader() {
+      const loader = document.getElementById('quantum-loader');
+      const progressBar = document.querySelector('.progress-bar');
+      
+      // Simulate loading progress
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 10;
+        progressBar.style.width = `${Math.min(progress, 100)}%`;
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          gsap.to(loader, {
+            opacity: 0,
+            duration: 1.5,
+            ease: "power2.inOut",
+            onComplete: () => loader.remove()
+          });
+        }
+      }, 200);
+    }
+    
+    // ===== QUANTUM STARFIELD =====
+    function initQuantumStarfield() {
+      const canvas = document.getElementById('quantum-starfield');
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      
+      canvas.width = width;
+      canvas.height = height;
+      
+      const ctx = canvas.getContext('2d');
+      const stars = [];
+      const starCount = 3000;
+      
+      // Create stars with varying properties
+      for (let i = 0; i < starCount; i++) {
+        stars.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          size: Math.random() ** 4 * 4,
+          speed: Math.random() ** 4 * 2,
+          alpha: Math.random() * 0.9 + 0.1,
+          hue: 200 + Math.random() * 40,
+          layer: Math.floor(Math.random() * 3) // 0: far, 1: medium, 2: close
+        });
+      }
+      
+      // Animate starfield
+      function animateStars() {
+        ctx.clearRect(0, 0, width, height);
+        
+        stars.forEach(star => {
+          const twinkle = Math.random() > 0.9 ? Math.random() * 2 : 1;
+          ctx.globalAlpha = star.alpha * twinkle;
+          ctx.fillStyle = `hsl(${star.hue}, 100%, ${80 + Math.random() * 20}%)`;
+          
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.size * twinkle, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Move stars based on speed and layer (parallax effect)
+          const speedFactor = star.layer === 0 ? 0.2 : star.layer === 1 ? 0.5 : 1;
+          star.y += star.speed * speedFactor;
+          if (star.y > height) {
+            star.y = 0;
+            star.x = Math.random() * width;
+          }
+        });
+        
+        requestAnimationFrame(animateStars);
+      }
+      
+      animateStars();
+    }
+    
+    // ===== QUANTUM PARTICLES =====
+    function initQuantumParticles() {
+      const container = document.getElementById('quantum-particles');
+      const particleCount = 500;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'quantum-particle';
+        
+        // Random properties with physics-based distribution
+        const size = Math.random() ** 2 * 15 + 2;
+        const posX = Math.random() * 100;
+        const posY = Math.random() * 100;
+        const hue = 190 + Math.random() * 60;
+        const saturation = 70 + Math.random() * 30;
+        const lightness = 60 + Math.random() * 30;
+        const opacity = Math.random() * 0.8 + 0.2;
+        const duration = Math.random() * 60 + 30;
+        const delay = Math.random() * 20;
+        
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${posX}%`;
+        particle.style.top = `${posY}%`;
+        particle.style.backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        particle.style.opacity = opacity;
+        
+        // Complex physics animations
+        gsap.to(particle, {
+          x: `${(Math.random() - 0.5) * 300}px`,
+          y: `${(Math.random() - 0.5) * 300}px`,
+          duration: duration,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          delay: delay
+        });
+        
+        // Pulsing effect
+        gsap.to(particle, {
+          scale: Math.random() * 0.5 + 0.7,
+          duration: Math.random() * 8 + 4,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut"
+        });
+        
+        container.appendChild(particle);
+      }
+    }
+    
+    // ===== QUANTUM CURSOR =====
+    function initQuantumCursor() {
+      const cursor = document.getElementById('quantum-cursor');
+      const trail = document.getElementById('cursor-trail');
+      let trailParticles = 0;
+      
+      // Cursor movement
+      document.addEventListener('mousemove', (e) => {
+        gsap.to(cursor, {
+          left: e.clientX,
+          top: e.clientY,
+          duration: 0.1
+        });
+        
+        // Create trail particles
+        if (trailParticles < 10) {
+          for (let i = 0; i < 3; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'cursor-particle';
+            
+            particle.style.left = `${e.clientX}px`;
+            particle.style.top = `${e.clientY}px`;
+            
+            // Random properties
+            const size = Math.random() * 10 + 4;
+            const hue = 190 + Math.random() * 60;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.backgroundColor = `hsl(${hue}, 100%, 70%)`;
+            
+            trail.appendChild(particle);
+            
+            // Physics-based animation
+            gsap.to(particle, {
+              x: `+=${(Math.random() - 0.5) * 150}`,
+              y: `+=${(Math.random() - 0.5) * 150}`,
+              opacity: 0,
+              scale: 0.1,
+              duration: Math.random() * 1.5 + 0.5,
+              ease: "power2.out",
+              delay: Math.random() * 0.3,
+              onComplete: () => {
+                trail.removeChild(particle);
+              }
+            });
+          }
+          
+          trailParticles++;
+          setTimeout(() => trailParticles--, 100);
+        }
+      });
+      
+      // Interactive elements effects
+      const interactiveElements = document.querySelectorAll('button, a, .quantum-glass');
+      
+      interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+          gsap.to(cursor, {
+            scale: 2,
+            duration: 0.3
+          });
+          
+          // Create burst effect
+          for (let i = 0; i < 15; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'cursor-particle';
+            
+            const rect = el.getBoundingClientRect();
+            particle.style.left = `${rect.left + rect.width/2}px`;
+            particle.style.top = `${rect.top + rect.height/2}px`;
+            
+            const size = Math.random() * 8 + 4;
+            const hue = 190 + Math.random() * 60;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.backgroundColor = `hsl(${hue}, 100%, 70%)`;
+            
+            trail.appendChild(particle);
+            
+            gsap.to(particle, {
+              x: `+=${(Math.random() - 0.5) * 200}`,
+              y: `+=${(Math.random() - 0.5) * 200}`,
+              opacity: 0,
+              scale: 0.1,
+              duration: Math.random() * 1 + 0.5,
+              ease: "power2.out",
+              onComplete: () => {
+                trail.removeChild(particle);
+              }
+            });
+          }
+        });
+        
+        el.addEventListener('mouseleave', () => {
+          gsap.to(cursor, {
+            scale: 1,
+            duration: 0.3
+          });
+        });
+      });
+    }
+    
+    // ===== QUANTUM NAVIGATION =====
+    function initQuantumNavigation() {
+      const navLinks = document.querySelectorAll('.nav-link');
+      
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = document.querySelector(link.getAttribute('href'));
+          
+          gsap.to(window, {
+            scrollTo: {
+              y: target,
+              offsetY: 100
+            },
+            duration: 1.5,
+            ease: "power4.out"
+          });
+        });
+      });
+    }
+    
+    // ===== QUANTUM ANIMATIONS =====
+    function initQuantumAnimations() {
+      gsap.registerPlugin(ScrollTrigger);
+      
+      // Scroll reveal animations
+      gsap.utils.toArray('.feature-card').forEach((el, i) => {
+        gsap.from(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: "top 85%",
+            toggleActions: "play none none none"
+          },
+          duration: 1,
+          opacity: 0,
+          y: 50,
+          ease: "power4.out",
+          delay: i * 0.1
+        });
+      });
+      
+      // Parallax effects
+      gsap.to('.black-hole', {
+        scrollTrigger: {
+          scrub: 1
+        },
+        y: 100,
+        duration: 2
+      });
+      
+      gsap.to('.planet', {
+        scrollTrigger: {
+          scrub: 1
+        },
+        y: -100,
+        x: 50,
+        duration: 2
+      });
+    }
+    
+    // ===== GALAXY MAP =====
+    function initGalaxyMap() {
+      const canvas = document.getElementById('galaxy-map');
+      const width = canvas.offsetWidth;
+      const height = canvas.offsetHeight;
+      
+      canvas.width = width;
+      canvas.height = height;
+      
+      const ctx = canvas.getContext('2d');
+      const stars = [];
+      const starCount = 1500;
+      const blackHoles = [];
+      const blackHoleCount = 5;
+      let zoom = 1;
+      let offsetX = 0;
+      let offsetY = 0;
+      let isDragging = false;
+      let lastX, lastY;
+      
+      // Create galaxy stars
+      for (let i = 0; i < starCount; i++) {
+        // Spiral galaxy distribution
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.random() ** 0.5 * Math.min(width, height) * 0.4;
+        const spread = Math.random() * 50;
+        
+        stars.push({
+          x: width/2 + Math.cos(angle) * radius + (Math.random() - 0.5) * spread,
+          y: height/2 + Math.sin(angle) * radius + (Math.random() - 0.5) * spread,
+          size: Math.random() ** 2 * 3 + 1,
+          hue: 220 + Math.random() * 40,
+          originalX: 0,
+          originalY: 0
+        });
+      }
+      
+      // Add central cluster
+      for (let i = 0; i < 300; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.random() * 50;
+        
+        stars.push({
+          x: width/2 + Math.cos(angle) * radius,
+          y: height/2 + Math.sin(angle) * radius,
+          size: Math.random() ** 2 * 5 + 2,
+          hue: 50 + Math.random() * 30,
+          originalX: 0,
+          originalY: 0
+        });
+      }
+      
+      // Create black holes
+      for (let i = 0; i < blackHoleCount; i++) {
+        blackHoles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          mass: 10000 + Math.random() * 20000
+        });
+      }
+      
+      // Draw galaxy
+      function drawGalaxy() {
+        ctx.clearRect(0, 0, width, height);
+        
+        // Draw background
+        const gradient = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, Math.min(width, height)/2);
+        gradient.addColorStop(0, 'rgba(10, 5, 30, 0.8)');
+        gradient.addColorStop(1, 'rgba(5, 2, 15, 0.9)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+        
+        // Draw stars
+        stars.forEach(star => {
+          // Apply zoom and offset
+          const x = (star.x - width/2) * zoom + width/2 + offsetX;
+          const y = (star.y - height/2) * zoom + height/2 + offsetY;
+          
+          // Only draw if in view
+          if (x >= 0 && x <= width && y >= 0 && y <= height) {
+            const alpha = 0.7 + Math.random() * 0.3;
+            ctx.fillStyle = `hsla(${star.hue}, 100%, 70%, ${alpha})`;
+            
+            ctx.beginPath();
+            ctx.arc(x, y, star.size * zoom, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        });
+        
+        // Draw connections
+        ctx.strokeStyle = `hsla(220, 100%, 70%, 0.1)`;
+        ctx.lineWidth = 1;
+        
+        for (let i = 0; i < stars.length; i += 10) {
+          for (let j = i + 1; j < stars.length; j += 10) {
+            const x1 = (stars[i].x - width/2) * zoom + width/2 + offsetX;
+            const y1 = (stars[i].y - height/2) * zoom + height/2 + offsetY;
+            const x2 = (stars[j].x - width/2) * zoom + width/2 + offsetX;
+            const y2 = (stars[j].y - height/2) * zoom + height/2 + offsetY;
+            
+            // Only draw if both in view
+            if (
+              x1 >= 0 && x1 <= width && y1 >= 0 && y1 <= height &&
+              x2 >= 0 && x2 <= width && y2 >= 0 && y2 <= height
+            ) {
+              const dx = x1 - x2;
+              const dy = y1 - y2;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              
+              if (dist < 100) {
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+              }
+            }
+          }
+        }
+        
+        // Draw black holes
+        blackHoles.forEach(hole => {
+          const x = (hole.x - width/2) * zoom + width/2 + offsetX;
+          const y = (hole.y - height/2) * zoom + height/2 + offsetY;
+          
+          if (x >= 0 && x <= width && y >= 0 && y <= height) {
+            // Draw accretion disk
+            ctx.beginPath();
+            ctx.arc(x, y, 20 * zoom, 0, Math.PI * 2);
+            ctx.strokeStyle = `hsla(300, 100%, 50%, 0.3)`;
+            ctx.lineWidth = 5 * zoom;
+            ctx.stroke();
+            
+            // Draw black hole
+            ctx.beginPath();
+            ctx.arc(x, y, 15 * zoom, 0, Math.PI * 2);
+            ctx.fillStyle = 'black';
+            ctx.fill();
+            
+            // Draw gravitational lensing effect
+            ctx.beginPath();
+            ctx.arc(x, y, 25 * zoom, 0, Math.PI * 2);
+            ctx.strokeStyle = `hsla(200, 100%, 70%, 0.2)`;
+            ctx.lineWidth = 2 * zoom;
+            ctx.stroke();
+          }
+        });
+        
+        requestAnimationFrame(drawGalaxy);
+      }
+      
+      drawGalaxy();
+      
+      // Make interactive
+      canvas.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        lastX = e.clientX;
+        lastY = e.clientY;
+      });
+      
+      canvas.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+          offsetX += (e.clientX - lastX) / zoom;
+          offsetY += (e.clientY - lastY) / zoom;
+          lastX = e.clientX;
+          lastY = e.clientY;
+          
+          // Update coordinates display
+          document.querySelector('.coord-x').textContent = `X: ${offsetX.toFixed(1)}`;
+          document.querySelector('.coord-y').textContent = `Y: ${offsetY.toFixed(1)}`;
+        } else {
+          const rect = canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          // Create gravitational effect
+          stars.forEach(star => {
+            const starX = (star.x - width/2) * zoom + width/2 + offsetX;
+            const starY = (star.y - height/2) * zoom + height/2 + offsetY;
+            
+            if (starX >= 0 && starX <= width && starY >= 0 && starY <= height) {
+              const dx = x - starX;
+              const dy = y - starY;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              
+              if (dist < 150) {
+                const force = 15000 / (dist * dist);
+                star.x -= dx * force * 0.001 / zoom;
+                star.y -= dy * force * 0.001 / zoom;
+              }
+            }
+          });
+        }
+      });
+      
+      canvas.addEventListener('mouseup', () => isDragging = false);
+      canvas.addEventListener('mouseleave', () => isDragging = false);
+      
+      // Zoom controls
+      document.querySelector('.zoom-in').addEventListener('click', () => {
+        zoom *= 1.2;
+        zoom = Math.min(zoom, 5);
+      });
+      
+      document.querySelector('.zoom-out').addEventListener('click', () => {
+        zoom *= 0.8;
+        zoom = Math.max(zoom, 0.5);
+      });
+    }
+    
+    // ===== QUANTUM FORM =====
+    function initQuantumForm() {
+      const form = document.getElementById('quantum-form');
+      
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Create submission effect
+        const submitButton = form.querySelector('.submit-button');
+        submitButton.textContent = 'Transmitting...';
+        
+        setTimeout(() => {
+          submitButton.textContent = 'Message Received!';
+          
+          // Create confirmation animation
+          gsap.to(submitButton, {
+            backgroundColor: '#00ff00',
+            duration: 0.5
+          });
+          
+          setTimeout(() => {
+            form.reset();
+            submitButton.textContent = 'Transmit Message';
+            gsap.to(submitButton, {
+              backgroundColor: '',
+              duration: 0.5
+            });
+          }, 2000);
+        }, 1500);
+      });
+    }
+    
+    // ===== QUANTUM AUDIO =====
+    function initQuantumAudio() {
+      // Create Web Audio API context
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      
+      // Create background hum
+      function createBackgroundHum() {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 220;
+        gainNode.gain.value = 0.02;
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.start();
+        
+        // Slowly modulate frequency
+        setInterval(() => {
+          oscillator.frequency.value = 220 + Math.sin(Date.now() / 5000) * 20;
+        }, 100);
+      }
+      
+      // Start audio on first interaction
+      document.body.addEventListener('click', () => {
+        createBackgroundHum();
+      }, { once: true });
+    }
+    
+    // ===== QUANTUM THREE.JS =====
+    function initQuantumThreeJS() {
+      // Create a Three.js scene for special elements
+      const threeContainer = document.createElement('div');
+      threeContainer.id = 'three-container';
+      threeContainer.style.position = 'absolute';
+      threeContainer.style.top = '0';
+      threeContainer.style.left = '0';
+      threeContainer.style.width = '100%';
+      threeContainer.style.height = '100%';
+      threeContainer.style.pointerEvents = 'none';
+      document.querySelector('.hero-visual').appendChild(threeContainer);
+      
+      // Setup Three.js scene
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, 600 / 600, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      
+      renderer.setSize(600, 600);
+      threeContainer.appendChild(renderer.domElement);
+      
+      // Create quantum objects
+      const geometry = new THREE.IcosahedronGeometry(1, 3);
+      const material = new THREE.MeshPhongMaterial({ 
+        color: 0x00ffff,
+        emissive: 0x0066cc,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.8
+      });
+      const quantumObject = new THREE.Mesh(geometry, material);
+      scene.add(quantumObject);
+      
+      // Add lights
+      const ambientLight = new THREE.AmbientLight(0x404040);
+      scene.add(ambientLight);
+      
+      const directionalLight = new THREE.DirectionalLight(0x00ffff, 1);
+      directionalLight.position.set(5, 5, 5);
+      scene.add(directionalLight);
+      
+      const pointLight = new THREE.PointLight(0xff00ff, 1, 100);
+      pointLight.position.set(-5, -5, 5);
+      scene.add(pointLight);
+      
+      camera.position.z = 5;
+      
+      // Create particles
+      const particleCount = 500;
+      const particles = new THREE.BufferGeometry();
+      const posArray = new Float32Array(particleCount * 3);
+      const colorArray = new Float32Array(particleCount * 3);
+      
+      for (let i = 0; i < particleCount * 3; i += 3) {
+        // Position
+        const radius = 2 + Math.random() * 3;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.random() * Math.PI;
+        
+        posArray[i] = radius * Math.sin(phi) * Math.cos(theta);
+        posArray[i+1] = radius * Math.sin(phi) * Math.sin(theta);
+        posArray[i+2] = radius * Math.cos(phi);
+        
+        // Color
+        const hue = 200 + Math.random() * 60;
+        const color = chroma.hsl(hue, 1, 0.7).gl();
+        colorArray[i] = color[0];
+        colorArray[i+1] = color[1];
+        colorArray[i+2] = color[2];
+      }
+      
+      particles.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+      particles.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+      
+      const particleMaterial = new THREE.PointsMaterial({
+        size: 0.05,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.8,
+        sizeAttenuation: true
+      });
+      
+      const particleSystem = new THREE.Points(particles, particleMaterial);
+      scene.add(particleSystem);
+      
+      // Animation loop
+      function animate() {
+        requestAnimationFrame(animate);
+        
+        quantumObject.rotation.x += 0.005;
+        quantumObject.rotation.y += 0.01;
+        
+        // Animate particles
+        const positions = particles.attributes.position.array;
+        for (let i = 0; i < positions.length; i += 3) {
+          // Create orbital motion
+          positions[i] += (Math.random() - 0.5) * 0.01;
+          positions[i+1] += (Math.random() - 0.5) * 0.01;
+          positions[i+2] += (Math.random() - 0.5) * 0.01;
+          
+          // Normalize to maintain spherical shape
+          const x = positions[i];
+          const y = positions[i+1];
+          const z = positions[i+2];
+          const len = Math.sqrt(x*x + y*y + z*z);
+          
+          positions[i] = x / len * (2 + Math.sin(Date.now()/1000 + i) * 0.2);
+          positions[i+1] = y / len * (2 + Math.sin(Date.now()/1000 + i) * 0.2);
+          positions[i+2] = z / len * (2 + Math.sin(Date.now()/1000 + i) * 0.2);
+        }
+        particles.attributes.position.needsUpdate = true;
+        
+        renderer.render(scene, camera);
+      }
+      
+      animate();
+    }
+    
+    // ===== POST-LOAD EFFECTS =====
+    function initPostLoadEffects() {
+      // Interactive button effects
+      document.querySelectorAll('.quantum-button').forEach(button => {
+        button.addEventListener('mousemove', (e) => {
+          const rect = button.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          button.style.background = `radial-gradient(circle at ${x}px ${y}px, var(--cosmic-violet), var(--quantum-blue))`;
+        });
+        
+        button.addEventListener('mouseleave', () => {
+          button.style.background = `linear-gradient(135deg, var(--cosmic-violet), var(--quantum-blue))`;
+        });
+      });
+      
+      // Final console message
+      console.log('%c🚀 QUANTUM INTERFACE FULLY OPERATIONAL', 'font-size: 20px; color: #00ffff; font-weight: bold;');
+      console.log('%cAll systems nominal. Welcome to the future of interfaces.', 'color: #ffffff;');
+    }
+  </script>
+</body>
+</html>

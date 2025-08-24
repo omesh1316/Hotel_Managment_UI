@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Food Ordering System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            background: url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092') no-repeat center center fixed;
+            background-size: cover;
+            cursor: none;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(8px);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            position: relative;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            animation: textGlow 2s infinite alternate;
+        }
+        
+        @keyframes textGlow {
+            from { text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+            to { text-shadow: 0 0 20px rgba(255,255,255,0.7); }
+        }
+        
+        h2 {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            position: relative;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: white;
+            animation: linePulse 1.5s infinite;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        
+        @keyframes linePulse {
+            0%, 100% { width: 50px; }
+            50% { width: 100px; }
+        }
+        
+        .options {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .options::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            100% { left: 100%; }
+        }
+        
+        .option-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .option-list li {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border-left: 4px solid white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-list li::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: white;
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.3s ease;
+        }
+        
+        .option-list li:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateX(5px);
+            box-shadow: 0 2px 15px rgba(255,255,255,0.3);
+        }
+        
+        .option-list li:hover::before {
+            transform: scaleY(1);
+        }
+        
+        .option-list li a {
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            display: block;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            margin-top: 40px;
+            position: relative;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #3498db, #e74c3c, #2ecc71, #3498db);
+            background-size: 300% 100%;
+            animation: gradientSlide 3s linear infinite;
+        }
+        
+        @keyframes gradientSlide {
+            0% { background-position: 0%; }
+            100% { background-position: 100%; }
+        }
+        
+        /* Floating food animations */
+        .floating-food {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0;
+            animation: floatFood 15s linear infinite;
+            z-index: -1;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        @keyframes floatFood {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Enhanced Colorful Cursor Trail */
+        .cursor-dot {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 999;
+            mix-blend-mode: screen;
+            background: radial-gradient(circle, #ff0000, #ff00ff, #0000ff);
+            filter: blur(1px);
+            animation: cursorPulse 1.5s infinite alternate;
+        }
+        
+        .cursor-trail {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 998;
+            filter: blur(0.5px);
+            animation: trailFade 0.5s forwards;
+        }
+        
+        @keyframes cursorPulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+        
+        @keyframes trailFade {
+            0% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Food Ordering System</h1>
+        
+        <h2>Welcome!</h2>
+        <p style="text-align: center; color: white; text-shadow: 0 0 5px rgba(0,0,0,0.5);">Please register or login to continue.</p>
+        
+        <div class="options">
+            <ul class="option-list">
+                <li><a href="{{ url_for('seller_register') }}">Register as Seller</a></li>
+                <li><a href="{{ url_for('buyer_register') }}">Register as Buyer</a></li>
+                <li><a href="{{ url_for('seller_login') }}">Seller Login</a></li>
+                <li><a href="{{ url_for('buyer_login') }}">Buyer Login</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Floating food elements -->
+    <div class="floating-food" style="left: 10%; animation-delay: 0s;">🍕</div>
+    <div class="floating-food" style="left: 20%; animation-delay: 2s;">🍔</div>
+    <div class="floating-food" style="left: 30%; animation-delay: 4s;">🍟</div>
+    <div class="floating-food" style="left: 40%; animation-delay: 6s;">🌮</div>
+    <div class="floating-food" style="left: 50%; animation-delay: 8s;">🍣</div>
+    <div class="floating-food" style="left: 60%; animation-delay: 10s;">🍜</div>
+    <div class="floating-food" style="left: 70%; animation-delay: 12s;">🍩</div>
+    <div class="floating-food" style="left: 80%; animation-delay: 14s;">🍦</div>
+    
+    <footer>
+        &copy; 2025 Food Ordering System. All rights reserved.
+    </footer>
+    
+    <script>
+        // Enhanced Colorful Cursor Trail
+        const cursorDot = document.createElement('div');
+        cursorDot.className = 'cursor-dot';
+        document.body.appendChild(cursorDot);
+        
+        const colors = ['#ff0000', '#ff00ff', '#0000ff', '#00ffff', '#ffff00', '#ff00ff'];
+        let colorIndex = 0;
+        
+        document.addEventListener('mousemove', function(e) {
+            // Main cursor dot
+            cursorDot.style.left = e.clientX + 'px';
+            cursorDot.style.top = e.clientY + 'px';
+            
+            // Change color gradually
+            colorIndex = (colorIndex + 0.5) % colors.length;
+            const nextColor = colors[Math.floor(colorIndex)];
+            cursorDot.style.background = `radial-gradient(circle, ${nextColor}, ${colors[(Math.floor(colorIndex)+1)%colors.length]}, ${colors[(Math.floor(colorIndex)+2)%colors.length]})`;
+            
+            // Create colorful trail dots
+            for (let i = 0; i < 3; i++) {
+                const trail = document.createElement('div');
+                trail.className = 'cursor-trail';
+                trail.style.left = e.clientX + 'px';
+                trail.style.top = e.clientY + 'px';
+                
+                // Random slight offset for each trail dot
+                const offsetX = (Math.random() - 0.5) * 20;
+                const offsetY = (Math.random() - 0.5) * 20;
+                trail.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+                
+                // Random color from our palette
+                trail.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                document.body.appendChild(trail);
+                
+                // Remove the trail element after animation completes
+                setTimeout(() => {
+                    trail.remove();
+                }, 500);
+            }
+        });
+        
+        // Button hover effect enhancement
+        const options = document.querySelectorAll('.option-list li');
+        options.forEach(option => {
+            option.addEventListener('mouseenter', function() {
+                const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                this.style.borderLeftColor = randomColor;
+            });
+            
+            option.addEventListener('mouseleave', function() {
+                this.style.borderLeftColor = 'white';
+            });
+        });
+        
+        // Floating food animation controller
+        function animateFood() {
+            const foods = document.querySelectorAll('.floating-food');
+            foods.forEach(food => {
+                // Randomize animation duration and delay
+                const duration = 10 + Math.random() * 20;
+                const delay = Math.random() * 15;
+                food.style.animation = `floatFood ${duration}s linear ${delay}s infinite`;
+                
+                // Random horizontal position
+                const left = Math.random() * 100;
+                food.style.left = `${left}%`;
+            });
+        }
+        
+        animateFood();
+    </script>
+</body>
+</html>
