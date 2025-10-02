@@ -1,16 +1,19 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import mysql.connector
+import os
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-# MySQL Connection
+
+
 conn = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password='omesh',  # <-- change this
-    database='shop_db'
-)
+    host='gateway01.ap-southeast-1.prod.aws.tidbcloud.com',           # PlanetScale host
+    user='4Fu6RXqNZAoLtZn.root',                                     # PlanetScale username
+    password='xgaprW1CjxNzgKBS',                                     # PlanetScale password
+    database='shop_db',                                              # Your database name
+    ssl_ca='C:\\Users\\omesh\\Desktop\\Desktop\\Onlline_food_ordering\\Onlline_food_ordering\\isrgrootx1.pem' # Path to CA cert
+    ) 
 cursor = conn.cursor(dictionary=True)
 
 # Home
